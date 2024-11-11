@@ -1,0 +1,6 @@
+[
+    { "value": "select", "label": "Select" },
+    { "value": "en-US", "label": "ENGLISH" },
+    { "value": "es-ES", "label": "SPANISH" },
+    { "value": "fr-FR", "label": "FRENCH" }
+]
