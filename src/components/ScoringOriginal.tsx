@@ -123,7 +123,7 @@ function MyTable({
   return (
     <div className="p-2" onScroll={handleScroll} style={{ overflowY: "auto" }}>
       <div className="h-2" />
-      <table style={{ cursor: "pointer" }}>
+      <table className="scoring-table" style={{ cursor: "pointer" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>

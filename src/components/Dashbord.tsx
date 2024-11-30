@@ -17,7 +17,9 @@ function Dashboard({ data }: any) {
       {
         accessorKey: "NAME",
         cell: ({ row }) => (
-          <a href={row.original.INPUT_URL}>{row.original.NAME}</a>
+          <u>
+            <a href={row.original.INPUT_URL}>{row.original.NAME}</a>
+          </u>
         ),
         header: () => "File Name",
         footer: (props) => props.column.id,
@@ -44,7 +46,7 @@ function Dashboard({ data }: any) {
         header: () => "Actions",
         cell: ({ row }) => (
           <Link to={`/localization`} state={{ ...row.original }}>
-            Transcribe
+            <u>Transcribe</u>
           </Link>
         ),
         footer: (props) => props.column.id,
@@ -101,12 +103,12 @@ function MyTable({
         <DebouncedInput
           value={globalFilter ?? ""}
           onChange={(value: any) => setGlobalFilter(String(value))}
-          className="p-2 font-lg shadow border border-block"
-          placeholder="Search all columns..."
+          className="search-input p-2 font-lg shadow border border-block"
+          placeholder="Search"
         />
       </div>
       <div className="h-2" />
-      <table>
+      <table className="file-upload-table">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -168,14 +170,7 @@ function MyTable({
       <div className="h-2" />
       {data?.length > 0 && (
         <div className="pagination-container">
-          <div className="flex items-center gap-2">
-            <button
-              className="border rounded p-1"
-              onClick={() => table.firstPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              {"<<"}
-            </button>
+          <div className="pagination-boxes">
             <button
               className="border rounded p-1"
               onClick={() => table.previousPage()}
@@ -185,27 +180,22 @@ function MyTable({
             </button>
             <button
               className="border rounded p-1"
+              style={{ cursor: "default" }}
+            >
+              {table.getState().pagination.pageIndex + 1}
+            </button>
+            <button
+              className="border rounded p-1"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
               {">"}
             </button>
-            <button
-              className="border rounded p-1"
-              onClick={() => table.lastPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              {">>"}
-            </button>
           </div>
           <span className="flex items-center gap-1">
-            <span>Page</span>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount().toLocaleString()}
-            </strong>
+            <strong> of {table.getPageCount().toLocaleString()}</strong>
           </span>
-          <div>
+          <div style={{ display: "none" }}>
             Showing {table.getRowModel().rows.length.toLocaleString()} of{" "}
             {table.getRowCount().toLocaleString()} Rows
           </div>

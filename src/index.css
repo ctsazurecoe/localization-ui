@@ -1,12 +1,31 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@font-face {
+  font-family: "Gellix";
+  src: url("../public/fonts/Gellix_R/Web-PS/Gellix-Regular_R.woff2")
+      format("woff2"),
+    /* Modern Browsers */
+      url("../public/fonts/Gellix_R/Opentype-PS/Gellix-Regular_R.otf")
+      format("opentype"); /* Safari, Android, iOS */
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+}
 
+@font-face {
+  font-family: "Gellix-bold";
+  src: url("../public/fonts/Gellix_R/Web-PS/Gellix-SemiBold_R.woff2")
+      format("woff2"),
+    /* Modern Browsers */
+      url("../public/fonts/Gellix_R/Opentype-PS/Gellix-SemiBold_R.otf")
+      format("opentype"); /* Safari, Android, iOS */
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+}
+
+:root {
+  font-family: Gellix, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,11 +34,9 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #2f78c4;
   text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  font-family: "Gellix-bold";
 }
 
 body {
@@ -32,14 +49,16 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 20px;
   border: 1px solid #ccc;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
+  font-family: "Gellix-bold";
   cursor: pointer;
   transition: border-color 0.25s;
+  color: #fff;
+  background-color: #2d2d8f;
 }
 
 button:focus,
@@ -58,7 +77,8 @@ thead {
   font-size: 13px;
 }
 
-tbody, tr {
+tbody,
+tr {
   border-bottom: 1px solid lightgray;
 }
 
@@ -66,6 +86,8 @@ th {
   border-bottom: 1px solid lightgray;
   padding: 2px 4px;
   text-align: left;
+  color: #f5f8ff;
+  background-color: #2e308e;
 }
 
 tfoot {
@@ -74,6 +96,10 @@ tfoot {
 
 tfoot th {
   font-weight: normal;
+}
+
+label {
+  font-size: 16px;
 }
 
 @media (prefers-color-scheme: light) {

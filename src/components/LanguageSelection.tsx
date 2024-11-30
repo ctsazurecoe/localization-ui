@@ -9,7 +9,7 @@ import { getLanguages } from "../utils/getLanguages";
 const LanguageSelection = forwardRef((props: { type: string }, ref) => {
   const { type } = props;
   const [languages, setLanguages] = useState<any[]>([
-    { SSML_LANGUAGE: "select", DISPLAY_LANGUAGE: "Select" },
+    { SSML_LANGUAGE: "select", DISPLAY_LANGUAGE: "Select Language" },
   ]);
   const [Language, setLanguage] = useState("");
   const [Locale, setLocale] = useState("");
@@ -38,21 +38,27 @@ const LanguageSelection = forwardRef((props: { type: string }, ref) => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        margin: "10px 0px",
+      }}
+    >
       <label>
-        <strong>{type} Language:</strong>
-        <select
-          style={{ marginLeft: "10px" }}
-          value={Locale}
-          onChange={handleLanguageChange}
-        >
-          {languages.map((language) => (
-            <option key={language.SSML_LANGUAGE} value={language.SSML_LANGUAGE}>
-              {language.DISPLAY_LANGUAGE}
-            </option>
-          ))}
-        </select>
+        {type} Language<span style={{ color: "red" }}>*</span>
       </label>
+      <select
+        style={{ width: "330px", height: "20px" }}
+        value={Locale}
+        onChange={handleLanguageChange}
+      >
+        {languages.map((language) => (
+          <option key={language.SSML_LANGUAGE} value={language.SSML_LANGUAGE}>
+            {language.DISPLAY_LANGUAGE}
+          </option>
+        ))}
+      </select>
     </div>
   );
 });

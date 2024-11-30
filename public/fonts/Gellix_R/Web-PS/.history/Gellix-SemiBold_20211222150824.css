@@ -1,0 +1,9 @@
+/* Webfont: Gellix-SemiBold */@font-face {
+    font-family: 'GellixSemiBold';
+    src: url('Gellix-SemiBold_R.woff2') format('woff2'), /* Modern Browsers */
+         url('Gellix-SemiBold_R.otf') format('opentype'); /* Safari, Android, iOS */
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+

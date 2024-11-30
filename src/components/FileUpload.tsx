@@ -3,7 +3,9 @@ import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./Dashbord";
+import Header from "./Header";
 import LanguageSelection from "./LanguageSelection";
+import Loader from "./Loader";
 
 const FileUpload: React.FC = () => {
   const [cancelSignals, setCancelSignals] = useState<{
@@ -38,8 +40,17 @@ const FileUpload: React.FC = () => {
     fetchData();
   }, [reloadTable]);
 
+  useEffect(() => {
+    if (currentFiles && currentFiles.length > 0) onFileUpload();
+  }, [currentFiles]);
+
   const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
+    const Language = languageRef.current.Language;
+    if (!Language || Language === "Select Language") {
+      toast("Please select a source language");
+      return;
+    }
     const newFiles = Array.from(e.target.files || []);
     setCurrentFiles(newFiles);
     setFiles([...files, ...newFiles]);
@@ -87,8 +98,8 @@ const FileUpload: React.FC = () => {
 
   const onFileUpload = async () => {
     const Language = languageRef.current.Language;
-    if (!Language || Language === "Select") {
-      toast("Please select a language");
+    if (!Language || Language === "Select Language") {
+      toast("Please select a source language");
       return;
     }
 
@@ -134,6 +145,7 @@ const FileUpload: React.FC = () => {
            * Remove the file from the list of files to upload
            * Reload the uploaded files list
            */
+          setIsLoading(true);
           const uploadedFileUrl = uploadResponse?.config?.url;
           const recordCreationStatus = await createDbRecordForUploadedFile(
             file,
@@ -150,30 +162,80 @@ const FileUpload: React.FC = () => {
             setReloadTable(!reloadTable);
             toast(`${file.name} uploaded successfully`);
           }
+          setIsLoading(false);
         }
       } catch (error) {
         console.log("Failed to upload file", file.name, error);
+        toast(`Failed to upload file - ${file.name}`);
+      } finally {
+        setIsLoading(false);
       }
     });
   };
 
+  const onDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const Language = languageRef.current.Language;
+    if (!Language || Language === "Select Language") {
+      toast("Please select a source language");
+      return;
+    }
+    const dropFiles = event?.dataTransfer?.files || [];
+    if (dropFiles) {
+      const newFiles = Array.from(dropFiles);
+      setCurrentFiles(newFiles);
+      setFiles([...files, ...newFiles]);
+    }
+  };
+
   return (
     <>
-      <div className="file-upload-container">
-        {isLoading && (
-          <div className="loader-container">
-            <div className="loader-text">Loading...</div>
-          </div>
-        )}
+      <Header />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "left",
+        }}
+      >
+        <div className="header-text">Upload File</div>
+        <label style={{ marginTop: "5px" }}>
+          Please select the source language of your video content before
+          uploading
+        </label>
+        <LanguageSelection ref={languageRef} type="Source" />
+      </div>
+      <div
+        className="file-upload-container"
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+      >
+        {isLoading && <Loader />}
         <ToastContainer autoClose={5000} />
         <img src="/src/assets/cloud-upload.svg" alt="File upload" />
-        <label>.mp3, .mp4</label>
-        <LanguageSelection ref={languageRef} type="Source" />
-        <input type="file" hidden multiple onChange={onFileChange} />
-        <button onClick={() => document.querySelector("input")?.click()}>
-          Select Files
+        <button style={{ display: "none" }} onClick={onFileUpload}>
+          Upload
         </button>
-        <button onClick={onFileUpload}>Upload</button>
+        <div>
+          <input
+            type="file"
+            hidden
+            multiple
+            onChange={onFileChange}
+            id="file-input"
+          />
+          <label htmlFor="file-input" className="file-upload-label">
+            <u>Click to Upload</u>
+          </label>
+          <span> or drag and drop files here</span>
+        </div>
+        <div style={{ fontSize: "12px" }}>
+          <span>Supported format: MP3, MP4</span>
+        </div>
       </div>
       <div className="file-upload-progress-container">
         {currentFiles.length > 0 &&
@@ -181,14 +243,17 @@ const FileUpload: React.FC = () => {
             <div className="file-upload-progress-wrapper">
               <div className="file-upload-progress" key={file.name}>
                 <span>
-                  <strong>{file.name}</strong>
+                  <label>{file.name}</label>
                 </span>
                 <div className="progress-container">
-                  <progress
-                    className="progress-bar"
-                    value={uploadProgress[file.name] || 0}
-                    max="100"
-                  />
+                  <div className="pogress-bar-wrapper">
+                    <div
+                      className="progress-bar"
+                      style={{
+                        width: `${uploadProgress[file.name]}%` || "0px",
+                      }}
+                    ></div>
+                  </div>
                   <span className="progress-percentage">
                     {uploadProgress[file.name] || 0}%
                   </span>

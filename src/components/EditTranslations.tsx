@@ -2,6 +2,8 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import Header from "./Header";
+import Loader from "./Loader";
 import ScoringOriginal from "./ScoringOriginal";
 import ScoringTranslated from "./ScoringTranslated";
 
@@ -109,17 +111,25 @@ function EditTranslations() {
 
   return (
     <>
-      <button style={{ float: "right" }}>
-        <Link to="/">Go Home</Link>
-      </button>
+      <Header />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div className="header-text">{fileName}</div>
+        <div>
+          <button>
+            <Link style={{ color: "#fff" }} to="/">
+              Go Home
+            </Link>
+          </button>
+        </div>
+      </div>
       <div className="localization-wrapper">
-        {isLoading && (
-          <div className="loader-container">
-            <div className="loader-text">Loading...</div>
-          </div>
-        )}
+        {isLoading && <Loader />}
         <ToastContainer autoClose={5000} />
-        <h3>{fileName}</h3>
         <div style={{ display: "flex", gap: "10px" }}>
           <div style={{ flex: 1 }}>
             <h3>Original</h3>

@@ -18,6 +18,7 @@
 
 h3 {
   height: 20px;
+  font-family: "Gellix-bold";
 }
 
 @keyframes logo-spin {
@@ -63,7 +64,7 @@ h3 {
   gap: 15px;
   justify-content: center;
   align-items: center;
-  width: 80%; 
+  width: 80%;
   height: 150px;
   max-width: 500px;
   background-color: #fff;
@@ -93,11 +94,6 @@ h3 {
   background: #f5f8ff;
 }
 
-.file-upload-container button {
-  background-color: #7460ff;
-  color: #fff;
-}
-
 .file-upload-progress-container {
   display: flex;
   margin-top: 10px;
@@ -109,6 +105,7 @@ h3 {
   border-radius: 5px;
   padding: 10px;
   width: 100%;
+  height: 40px;
 }
 
 .file-upload-progress {
@@ -123,32 +120,42 @@ h3 {
   gap: 10px;
 }
 
+.pogress-bar-wrapper {
+  width: 100%;
+  background: white;
+  border: 1px solid lightgrey;
+  border-radius: 20px;
+}
+
 .progress-bar {
-  width: 95%;
-  accent-color: #434ce7;
+  width: 100%;
+  height: 6px;
+  /*accent-color: #2D2D8F;*/
+  background: linear-gradient(to right, #2d2d8f, #006fba, #21fceb);
 }
 
 .file-upload-close-icon {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   border: none;
   border-radius: 30px;
-  font-size: 1.5em;
   cursor: pointer;
-  color: #434ce7;
-  background-color: #f1efff;
 }
 
 .pagination-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
+  align-items: flex-end;
   gap: 5px;
   margin-top: 10px;
+}
+
+.pagination-boxes {
+  display: flex;
+  gap: 5px;
 }
 
 .file-list-container {
@@ -157,17 +164,27 @@ h3 {
 
 .search-all-columns {
   float: right;
-  padding: 10px;
+  padding: 10px 0 10px;
 }
 
-.localization-wrapper {
-  text-align: center;
+.search-input {
+  width: 300px;
+  height: 30px;
+  background-color: #f2f2f2;
+  border: 1px;
+  border-radius: 5px;
+  padding-left: 10px;
+  background-position: 290px 8px;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-image: url("src/assets/search_icon.png");
 }
 
 .button_transcribe {
-  background-color: #7460ff;
+  background-color: #2d2d8f;
   color: #fff;
-  margin-top: 20px;
+  margin-top: 5px;
+  width: 120px;
 }
 
 .loader-container {
@@ -184,12 +201,14 @@ h3 {
   z-index: 9999;
 }
 
-.transcribe-list, .video-preview, .scoring-original, .scoring-translated {
+.transcribe-list,
+.video-preview,
+.scoring-original,
+.scoring-translated {
   display: flex;
   border: 1px solid #d3dfff;
   border-radius: 10px;
   height: 500px;
-  background: #f5f8ff;
 }
 
 .transcribe-list {
@@ -201,27 +220,27 @@ h3 {
   box-sizing: border-box;
 }
 
-.transcribe-item, .transcribe-item-selected {
+.transcribe-item,
+.transcribe-item-selected {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
   border: 1px solid #d3dfff;
   border-radius: 10px;
-  background: #f5f8ff;
-  height: 200;
   width: auto;
 }
 
-.transcribe-item-selected, .sequence-item-selected {
-  border: 2px solid #7460ff;
+.transcribe-item-selected,
+.sequence-item-selected {
+  background-color: #eaf1f9;
 }
 
 .edit-translations {
   float: right;
   padding: 10px;
   margin-top: 10px;
-  background-color: #7460ff;
+  background-color: #2d2d8f;
   color: #fff;
 }
 
@@ -231,4 +250,32 @@ textarea {
   padding: 10px;
   border: 1px solid #d3dfff;
   border-radius: 10px;
+  background-color: #f2f2f2;
+}
+
+.app_header {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 33.45px;
+}
+
+.cog_logo {
+  width: 206px;
+  height: 36px;
+  top: 34px;
+}
+
+.header-text {
+  font-family: "Gellix-bold";
+  font-size: larger;
+}
+
+.file-upload-label {
+  color: #2f78c4;
+  cursor: pointer;
+}
+
+.file-upload-table tr:nth-child(even),
+.scoring-table tr:nth-child(even) {
+  background-color: #f7f7f5;
 }

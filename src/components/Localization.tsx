@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "./Header";
 import LanguageSelection from "./LanguageSelection";
+import Loader from "./Loader";
 
 function Localization() {
   const location = useLocation();
   const {
-    GUID: FILEGGUID,
+    GUID: FILEGUID,
     NAME: fileName,
     LANGUAGE: SOURCE_LANGUAGE,
     LOCALE: SOURCE_LOCALE,
@@ -49,14 +51,17 @@ function Localization() {
   }, [reloadList]);
 
   const onTranscribe = async () => {
-    console.log("Transcribing...");
-    setIsLoading(true);
     const TARGET_LANGUAGE = languageRef.current.Language;
     const TARGET_LOCALE = languageRef.current.Locale;
+    if (!TARGET_LANGUAGE || TARGET_LANGUAGE === "Select Language") {
+      toast("Please select a target language");
+      return;
+    }
     try {
+      setIsLoading(true);
       toast("Translations initiated and it will take some time to complete");
       await axios.post("http://localhost:3001/initiateTranslation", {
-        FILEGGUID,
+        FILEGUID,
         NAME: fileName,
         SOURCE_LANGUAGE,
         SOURCE_LOCALE,
@@ -90,76 +95,107 @@ function Localization() {
   };
 
   return (
-    <div className="localization-wrapper">
-      {isLoading && (
-        <div className="loader-container">
-          <div className="loader-text">Loading...</div>
+    <>
+      <Header />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left",
+          }}
+        >
+          <div className="header-text">{fileName}</div>
+          <label style={{ marginTop: "5px" }}>
+            Please select the target language of your video content to be
+            translated
+          </label>
+          <LanguageSelection ref={languageRef} type="Target" />
+          <button className="button_transcribe" onClick={onTranscribe}>
+            Transcribe
+          </button>
         </div>
-      )}
-      <ToastContainer autoClose={5000} />
-      <button style={{ float: "right" }}>
-        <Link to="/">Back</Link>
-      </button>
-      <h3>{fileName}</h3>
-      <LanguageSelection ref={languageRef} type="Target" />
-      <button className="button_transcribe" onClick={onTranscribe}>
-        Transcribe
-      </button>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <div style={{ flex: 1 }}>
-          <h3>Transcribe List</h3>
-          <div className="transcribe-list">
-            {transcriptions.map((transcription: any, index) => (
-              <div
-                key={index}
-                className={`transcribe-item${
-                  selectedTranscription === index ? "-selected" : ""
-                }`}
-                onClick={() => onTranscriptionSelection(index)}
-              >
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <div style={{ textAlign: "left" }}>
-                    <p>{transcription.NAME}</p>
-                    <p>
-                      <strong>{`${transcription.SOURCE_LANGUAGE} - To - ${transcription.TARGET_LANGUAGE}`}</strong>
-                    </p>
-                  </div>
-                  <div style={{ textAlign: "left" }}>
-                    <p>
-                      {transcription?.LAST_UPDATED
-                        ? convertUTCDateToLocalDate(
-                            transcription.LAST_UPDATED
-                          ).toString()
-                        : ""}
-                    </p>
-                    <p>{transcription.STATUS}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div style={{ flex: 1 }}>
-          <h3>Preview</h3>
-          <div className="video-preview">
-            <video
-              src={videoUrl}
-              controls
-              style={{ width: "100%", objectFit: "fill" }}
-            />
-          </div>
+        <div>
+          <button>
+            <Link style={{ color: "#fff" }} to="/">
+              Back
+            </Link>
+          </button>
         </div>
       </div>
-      {fileGUID &&
-        transcriptionStatus &&
-        transcriptionStatus !== "InProgress" && (
-          <Link to="/translations" state={{ fileName, fileGUID, videoUrl }}>
-            <button className="edit-translations">Edit Translations</button>
-          </Link>
-        )}
-    </div>
+      <div className="localization-wrapper">
+        {isLoading && <Loader />}
+        <ToastContainer autoClose={5000} />
+        <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ flex: 1 }}>
+            <h3>Transcribe List</h3>
+            <div className="transcribe-list">
+              {transcriptions.map((transcription: any, index) => (
+                <div
+                  key={index}
+                  className={`transcribe-item${
+                    selectedTranscription === index ? "-selected" : ""
+                  }`}
+                  onClick={() => onTranscriptionSelection(index)}
+                >
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div style={{ textAlign: "left" }}>
+                      <p>{transcription.NAME}</p>
+                      <p style={{ fontFamily: "Gellix-bold" }}>
+                        <strong>{`${transcription.SOURCE_LANGUAGE} - To - ${transcription.TARGET_LANGUAGE}`}</strong>
+                      </p>
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                      <p>
+                        {transcription?.LAST_UPDATED
+                          ? convertUTCDateToLocalDate(
+                              transcription.LAST_UPDATED
+                            ).toString()
+                          : ""}
+                      </p>
+                      <p>
+                        {transcription.STATUS === "InProgress" ? (
+                          <img src="/src/assets/circle_yellow.svg" />
+                        ) : (
+                          <img src="/src/assets/circle_green.svg" />
+                        )}
+                        <text style={{ paddingLeft: "5px" }}>
+                          {transcription.STATUS}
+                        </text>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3>Preview</h3>
+            <div className="video-preview">
+              <video
+                src={videoUrl}
+                controls
+                style={{ width: "100%", objectFit: "fill" }}
+              />
+            </div>
+          </div>
+        </div>
+        {fileGUID &&
+          transcriptionStatus &&
+          transcriptionStatus !== "InProgress" && (
+            <Link to="/translations" state={{ fileName, fileGUID, videoUrl }}>
+              <button className="edit-translations">Edit Translations</button>
+            </Link>
+          )}
+      </div>
+    </>
   );
 }
 

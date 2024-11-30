@@ -1,0 +1,9 @@
+/* Webfont: Gellix-Regular */@font-face {
+    font-family: 'Gellix';
+    src: url('Gellix-Regular_R.woff2') format('woff2'), /* Modern Browsers */
+         url('Gellix-Regular_R.otf') format('opentype'); /* Safari, Android, iOS */
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+
