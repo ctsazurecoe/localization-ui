@@ -11,7 +11,11 @@ function EditTranslations() {
   const videoRef = useRef<any>();
   const location = useLocation();
   const [data, setData] = useState<any[]>([]);
-  const { fileName, fileGUID, videoUrl } = location?.state || {};
+  const {
+    fileName,
+    transcriptionGUID: fileGUID,
+    videoUrl,
+  } = location?.state || {};
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const [translationsCount, setTranslationsCount] = useState(0);
   const [translatedTexts, setTranslatedTexts] = useState({});
@@ -95,10 +99,9 @@ function EditTranslations() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3001/updateFinalTranslation",
+        "http://localhost:3001/translationReprocessing",
         {
           fileGUID,
-          translatedTexts,
         }
       );
       console.log("Final translation updated successfully", response);
@@ -163,7 +166,7 @@ function EditTranslations() {
                 style={{ margin: "10px auto auto auto", float: "right" }}
                 onClick={onFinalTranslation}
               >
-                Final Translation
+                Translation Reprocess
               </button>
             </div>
           </div>

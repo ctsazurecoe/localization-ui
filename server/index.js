@@ -12,6 +12,8 @@ import express from "express";
 import { closeConnection, getConnection } from "./utils/Db_connection.js";
 
 const app = express();
+const LOGIC_APP_URL =
+  "https://prod-43.eastus.logic.azure.com:443/workflows/1cbdff5debaf423f958d966e2ea5410a/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=meZjEO8spt2aVnMr1BM6h-_b9KPM1CHxZzWsKBvZTCI";
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,14 +86,14 @@ app.get("/getListOfUploadedFiles", async (req, res) => {
 });
 
 app.get("/getTranscriptions", async (req, res) => {
-  const { fileName } = req.query;
+  const { FILEGUID } = req.query;
   let pool = null;
   try {
     pool = await getConnection();
     const result = await pool
       .request()
       .query(
-        `SELECT * FROM VIDEO_TRANSCRIPTIONS WHERE NAME = '${fileName}' ORDER BY LAST_UPDATED DESC`
+        `SELECT * FROM VIDEO_TRANSCRIPTIONS WHERE FILEGUID = '${FILEGUID}' ORDER BY LAST_UPDATED DESC`
       );
     res.json(result.recordset);
   } catch (err) {
@@ -210,14 +212,12 @@ app.post("/initiateTranslation", async (req, res) => {
     fileName: NAME,
     sourceLocale: SOURCE_LOCALE,
     targetLocale: TARGET_LOCALE,
+    reProcess: false,
   };
   try {
-    const response = await axios.post(
-      "https://prod-21.eastus.logic.azure.com:443/workflows/081311323746496e8ca1865483c81c4d/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=O34U4t-8qbEC1_lwf_d0C5_WPuLiVeAE3P5vBXLsjxI",
-      requestBody
-    );
+    const response = await axios.post(LOGIC_APP_URL, requestBody);
     // Handle the API response
-    console.log(response.data);
+    console.log("Initiate translation response", response);
     if (response) {
       pool = await getConnection();
       const result = await pool
@@ -230,9 +230,10 @@ app.post("/initiateTranslation", async (req, res) => {
         .input("TARGET_LOCALE", TARGET_LOCALE)
         .input("INPUT_URL", INPUT_URL)
         .input("STATUS", STATUS)
+        .input("START_TIME", LAST_UPDATED)
         .input("LAST_UPDATED", LAST_UPDATED).query(`
-              INSERT INTO VIDEO_TRANSCRIPTIONS (FILEGUID, NAME, SOURCE_LANGUAGE, SOURCE_LOCALE, TARGET_LANGUAGE, TARGET_LOCALE, INPUT_URL, STATUS, LAST_UPDATED)
-              VALUES (@FILEGUID, @NAME, @SOURCE_LANGUAGE, @SOURCE_LOCALE, @TARGET_LANGUAGE, @TARGET_LOCALE, @INPUT_URL, @STATUS, @LAST_UPDATED)
+              INSERT INTO VIDEO_TRANSCRIPTIONS (FILEGUID, NAME, SOURCE_LANGUAGE, SOURCE_LOCALE, TARGET_LANGUAGE, TARGET_LOCALE, INPUT_URL, STATUS, LAST_UPDATED, START_TIME)
+              VALUES (@FILEGUID, @NAME, @SOURCE_LANGUAGE, @SOURCE_LOCALE, @TARGET_LANGUAGE, @TARGET_LOCALE, @INPUT_URL, @STATUS, @LAST_UPDATED, @LAST_UPDATED)
             `);
       if (result) {
         res.json({
@@ -246,7 +247,7 @@ app.post("/initiateTranslation", async (req, res) => {
         });
       }
     } else {
-      res.json({ message: "API callis unsuccessful", data: response.data });
+      res.json({ message: "Initiate translation is unsuccessful" });
     }
   } catch (error) {
     console.error("API call error:", error);
@@ -254,6 +255,28 @@ app.post("/initiateTranslation", async (req, res) => {
   } finally {
     // Release the connection pool
     closeConnection();
+  }
+});
+
+app.post("/translationReprocessing", async (req, res) => {
+  const { fileGUID } = req.body;
+  try {
+    // Trigger Logic App
+    const response = await axios.post(LOGIC_APP_URL, {
+      fileGUID,
+      reProcess: true,
+    });
+    if (response) {
+      res.json({
+        message: "Logic App triggered successfully",
+        data: response?.data,
+      });
+    } else {
+      res.json({ message: "Reprocessing is unsuccessful" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

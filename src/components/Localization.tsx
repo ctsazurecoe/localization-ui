@@ -21,25 +21,32 @@ function Localization() {
   const [transcriptions, setTranscriptions] = useState([]);
   const [selectedTranscription, setSelectedTranscription] = useState(-1);
   const [videoUrl, setVideoUrl] = useState("");
-  const [fileGUID, setFileGUID] = useState("");
+  const [transcriptionGUID, setTranscriptionGUID] = useState("");
   const [reloadList, setReloadList] = useState(false);
   const [transcriptionStatus, setTranscriptionStatus] = useState("");
+  const [excludeTargetLanguages, setExcludeTargetLanguages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      // get transcriptions from server with filename
+      // get transcriptions from server with FILEGUID
       try {
         const response = await axios.get(
           "http://localhost:3001/getTranscriptions",
           {
             params: {
-              fileName,
+              FILEGUID,
             },
           }
         );
         if (response?.data) {
-          setTranscriptions(response?.data);
+          const transcriptionsList = response?.data || [];
+          setTranscriptions(transcriptionsList);
+          const excludeTargetLanguages = transcriptionsList
+            .filter((list: any) => list.STATUS === "InProgress")
+            ?.map((obj: any) => obj.TARGET_LANGUAGE);
+          setExcludeTargetLanguages(excludeTargetLanguages);
+          console.log("excludeTargetLanguages", excludeTargetLanguages);
         }
       } catch (error) {
         console.error("Error fetching transcriptions:", error);
@@ -81,10 +88,10 @@ function Localization() {
     setSelectedTranscription(index);
     const transcriptionData: any = transcriptions[index];
     const videoUrl = transcriptionData.OUTPUT_URL;
-    const fileGUID = transcriptionData.FILEGUID;
+    const transcriptionGUID = transcriptionData.GUID;
     const status = transcriptionData.STATUS;
     setVideoUrl(videoUrl);
-    setFileGUID(fileGUID);
+    setTranscriptionGUID(transcriptionGUID);
     setTranscriptionStatus(status);
   };
 
@@ -115,7 +122,11 @@ function Localization() {
             Please select the target language of your video content to be
             translated
           </label>
-          <LanguageSelection ref={languageRef} type="Target" />
+          <LanguageSelection
+            ref={languageRef}
+            type="Target"
+            excludeTargetLanguages={excludeTargetLanguages}
+          />
           <button className="button_transcribe" onClick={onTranscribe}>
             Transcribe
           </button>
@@ -187,10 +198,13 @@ function Localization() {
             </div>
           </div>
         </div>
-        {fileGUID &&
+        {transcriptionGUID &&
           transcriptionStatus &&
           transcriptionStatus !== "InProgress" && (
-            <Link to="/translations" state={{ fileName, fileGUID, videoUrl }}>
+            <Link
+              to="/translations"
+              state={{ fileName, transcriptionGUID, videoUrl }}
+            >
               <button className="edit-translations">Edit Translations</button>
             </Link>
           )}
