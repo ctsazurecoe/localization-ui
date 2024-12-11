@@ -69,7 +69,6 @@ function ScoringOriginal({
 }
 
 function MyTable({
-  fileGUID,
   translationsCount,
   columns,
   setSelectedRowData,
