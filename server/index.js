@@ -13,7 +13,7 @@ import { closeConnection, getConnection } from "./utils/Db_connection.js";
 
 const app = express();
 const LOGIC_APP_URL =
-  "https://prod-49.eastus.logic.azure.com:443/workflows/0f37bde6b36341f4b2d3df230925251c/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=hb9T5V2_9ys2dqfkn6i_Ur0h9PRJ7MVEE4Zh4yKcr4A";
+  "https://prod-43.eastus.logic.azure.com:443/workflows/1cbdff5debaf423f958d966e2ea5410a/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=meZjEO8spt2aVnMr1BM6h-_b9KPM1CHxZzWsKBvZTCI";
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

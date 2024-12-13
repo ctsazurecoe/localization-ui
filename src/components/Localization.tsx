@@ -95,10 +95,15 @@ function Localization() {
     setTranscriptionStatus(status);
   };
 
-  const convertUTCDateToLocalDate = (date: any) => {
-    var newDate = new Date(date);
-    newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
-    return newDate.toLocaleString();
+  const convertUTCDateToLocalDate = (date_to_convert_str: any) => {
+    return new Date(date_to_convert_str).toLocaleString("en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
 
   return (
@@ -155,7 +160,10 @@ function Localization() {
                   onClick={() => onTranscriptionSelection(index)}
                 >
                   <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
                   >
                     <div style={{ textAlign: "left" }}>
                       <p>{transcription.NAME}</p>
@@ -163,7 +171,7 @@ function Localization() {
                         <strong>{`${transcription.SOURCE_LANGUAGE} - To - ${transcription.TARGET_LANGUAGE}`}</strong>
                       </p>
                     </div>
-                    <div style={{ textAlign: "left" }}>
+                    <div style={{ textAlign: "left", width: "180px" }}>
                       <p>
                         {transcription?.LAST_UPDATED
                           ? convertUTCDateToLocalDate(
