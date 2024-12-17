@@ -206,48 +206,47 @@ app.post("/initiateTranslation", async (req, res) => {
   const STATUS = "InProgress";
   const LAST_UPDATED = new Date();
   let pool = null;
-  // Make an API call using the request body
-  const requestBody = {
-    fileGUID: FILEGUID,
-    fileName: NAME,
-    sourceLocale: SOURCE_LOCALE,
-    targetLocale: TARGET_LOCALE,
-    reProcess: false,
-  };
   try {
-    const response = await axios.post(LOGIC_APP_URL, requestBody);
-    // Handle the API response
-    console.log("Initiate translation response", response);
-    if (response) {
-      pool = await getConnection();
-      const result = await pool
-        .request()
-        .input("FILEGUID", FILEGUID)
-        .input("NAME", NAME)
-        .input("SOURCE_LANGUAGE", SOURCE_LANGUAGE)
-        .input("SOURCE_LOCALE", SOURCE_LOCALE)
-        .input("TARGET_LANGUAGE", TARGET_LANGUAGE)
-        .input("TARGET_LOCALE", TARGET_LOCALE)
-        .input("INPUT_URL", INPUT_URL)
-        .input("STATUS", STATUS)
-        .input("START_TIME", LAST_UPDATED)
-        .input("LAST_UPDATED", LAST_UPDATED).query(`
-              INSERT INTO VIDEO_TRANSCRIPTIONS (FILEGUID, NAME, SOURCE_LANGUAGE, SOURCE_LOCALE, TARGET_LANGUAGE, TARGET_LOCALE, INPUT_URL, STATUS, LAST_UPDATED, START_TIME)
-              VALUES (@FILEGUID, @NAME, @SOURCE_LANGUAGE, @SOURCE_LOCALE, @TARGET_LANGUAGE, @TARGET_LOCALE, @INPUT_URL, @STATUS, @LAST_UPDATED, @LAST_UPDATED)
-            `);
-      if (result) {
+    pool = await getConnection();
+    const db_result = await pool
+      .request()
+      .input("FILEGUID", FILEGUID)
+      .input("NAME", NAME)
+      .input("SOURCE_LANGUAGE", SOURCE_LANGUAGE)
+      .input("SOURCE_LOCALE", SOURCE_LOCALE)
+      .input("TARGET_LANGUAGE", TARGET_LANGUAGE)
+      .input("TARGET_LOCALE", TARGET_LOCALE)
+      .input("INPUT_URL", INPUT_URL)
+      .input("STATUS", STATUS)
+      .input("START_TIME", LAST_UPDATED)
+      .input("LAST_UPDATED", LAST_UPDATED).query(`
+            INSERT INTO VIDEO_TRANSCRIPTIONS (FILEGUID, NAME, SOURCE_LANGUAGE, SOURCE_LOCALE, TARGET_LANGUAGE, TARGET_LOCALE, INPUT_URL, STATUS, LAST_UPDATED, START_TIME)
+            OUTPUT INSERTED.GUID
+            VALUES (@FILEGUID, @NAME, @SOURCE_LANGUAGE, @SOURCE_LOCALE, @TARGET_LANGUAGE, @TARGET_LOCALE, @INPUT_URL, @STATUS, @LAST_UPDATED, @LAST_UPDATED);
+          `);
+    if (db_result && db_result.recordset) {
+      console.log("Initiate request insert record response", db_result);
+      const requestBody = {
+        fileGUID: db_result?.recordset[0]?.GUID,
+        fileName: NAME,
+        sourceLocale: SOURCE_LOCALE,
+        targetLocale: TARGET_LOCALE,
+        reProcess: false,
+      };
+      const api_response = await axios.post(LOGIC_APP_URL, requestBody);
+      if (api_response) {
         res.json({
-          message: "DB record created successfully",
-          result,
+          message: "Initiate translation is successful",
+          result: api_response.statusText,
         });
       } else {
         res.json({
-          message: "Failed to create DB record for uploaded file",
-          result,
+          message: "Initiate translation is unsuccessful",
+          result: api_response.statusText,
         });
       }
     } else {
-      res.json({ message: "Initiate translation is unsuccessful" });
+      res.json({ message: "Failed to create DB record for uploaded file" });
     }
   } catch (error) {
     console.error("API call error:", error);
