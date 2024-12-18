@@ -24,10 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3001;
 
-app.get("/", (req, res) => {
-  res.send("Root path");
-});
-
 app.get("/getSasUrl", async (req, res) => {
   const blobServiceClient = BlobServiceClient.fromConnectionString(
     process.env.AZURE_STORAGE_CONNECTION_STRING
