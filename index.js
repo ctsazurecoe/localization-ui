@@ -21,10 +21,6 @@ const LOGIC_APP_URL =
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.resolve(__dirname, "client/dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client/dist", "index.html"));
-});
 
 const port = process.env.PORT || 3001;
 
@@ -313,6 +309,11 @@ app.post("/updateTranslatedText", async (req, res) => {
     // Release the connection pool
     closeConnection();
   }
+});
+
+app.use(express.static(path.resolve(__dirname, "client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client/dist", "index.html"));
 });
 
 app.listen(port, () => console.log("Server started", port));
