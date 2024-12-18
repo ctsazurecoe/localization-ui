@@ -8,12 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 client/node_modules
-client/dist
-client/dist-ssr
 *.local
 client/tsconfig.*.tsbuildinfo
 node_modules
-
+.env
 
 # Editor directories and files
 .vscode/*
