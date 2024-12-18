@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./Header";
 import LanguageSelection from "./LanguageSelection";
 import Loader from "./Loader";
+import BASE_URL from "../baseUrl";
 
 function Localization() {
   const location = useLocation();
@@ -31,14 +32,11 @@ function Localization() {
       setIsLoading(true);
       // get transcriptions from server with FILEGUID
       try {
-        const response = await axios.get(
-          "http://localhost:3001/getTranscriptions",
-          {
-            params: {
-              FILEGUID,
-            },
-          }
-        );
+        const response = await axios.get(`${BASE_URL}/getTranscriptions`, {
+          params: {
+            FILEGUID,
+          },
+        });
         if (response?.data) {
           const transcriptionsList = response?.data || [];
           setTranscriptions(transcriptionsList);
@@ -67,7 +65,7 @@ function Localization() {
     try {
       setIsLoading(true);
       toast("Translations initiated and it will take some time to complete");
-      await axios.post("http://localhost:3001/initiateTranslation", {
+      await axios.post(`${BASE_URL}/initiateTranslation`, {
         FILEGUID,
         NAME: fileName,
         SOURCE_LANGUAGE,

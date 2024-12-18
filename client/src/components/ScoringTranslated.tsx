@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import BASE_URL from "../baseUrl";
 
 function ScoringTranslated({
   fileGUID,
@@ -28,14 +29,11 @@ function ScoringTranslated({
     console.log("Text saved: ", finalText);
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/updateTranslatedText",
-        {
-          fileGUID,
-          selectedSequence,
-          finalTranslatedText: finalText,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/updateTranslatedText`, {
+        fileGUID,
+        selectedSequence,
+        finalTranslatedText: finalText,
+      });
       toast.success("Text updated successfully");
       setTranslatedData((prevData: any) => {
         const updatedData = [...prevData];

@@ -6,6 +6,7 @@ import Dashboard from "./Dashbord";
 import Header from "./Header";
 import LanguageSelection from "./LanguageSelection";
 import Loader from "./Loader";
+import BASE_URL from "../baseUrl";
 
 const FileUpload: React.FC = () => {
   const [cancelSignals, setCancelSignals] = useState<{
@@ -26,9 +27,7 @@ const FileUpload: React.FC = () => {
       setIsLoading(true);
       // Get list of uploaded files from sql db
       try {
-        const filesData = await axios.get(
-          "http://localhost:3001/getListOfUploadedFiles"
-        );
+        const filesData = await axios.get(`${BASE_URL}/getListOfUploadedFiles`);
         filesData?.data && setFileListData(filesData?.data);
       } catch (error) {
         console.log("Failed to fetch list of uploaded files", error);
@@ -64,7 +63,7 @@ const FileUpload: React.FC = () => {
     try {
       // Make API call to create the record in Azure SQL DB
       const response = await axios.post(
-        "http://localhost:3001/createDbRecordForUploadedFile",
+        `${BASE_URL}/createDbRecordForUploadedFile`,
         {
           NAME: file.name,
           LANGUAGE: languageRef?.current?.Language,
@@ -106,7 +105,7 @@ const FileUpload: React.FC = () => {
     currentFiles.forEach(async (file) => {
       // Request a SAS URL from the server
       const sasResponse = await axios.get(
-        `http://localhost:3001/getSasUrl?fileName=${file.name}`
+        `${BASE_URL}/getSasUrl?fileName=${file.name}`
       );
       console.log("response", sasResponse);
       const { sasUrl } = sasResponse?.data;

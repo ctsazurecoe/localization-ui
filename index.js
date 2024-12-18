@@ -9,14 +9,22 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 import { closeConnection, getConnection } from "./utils/Db_connection.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 const LOGIC_APP_URL =
   "https://prod-43.eastus.logic.azure.com:443/workflows/1cbdff5debaf423f958d966e2ea5410a/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=meZjEO8spt2aVnMr1BM6h-_b9KPM1CHxZzWsKBvZTCI";
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.resolve(__dirname, "client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client/dist", "index.html"));
+});
 
 const port = process.env.PORT || 3001;
 

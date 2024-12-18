@@ -7,11 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+client/node_modules
+client/dist
+client/dist-ssr
 *.local
-tsconfig.*.tsbuildinfo
+client/tsconfig.*.tsbuildinfo
+node_modules
+
 
 # Editor directories and files
 .vscode/*

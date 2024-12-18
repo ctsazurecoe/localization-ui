@@ -6,6 +6,7 @@ import Header from "./Header";
 import Loader from "./Loader";
 import ScoringOriginal from "./ScoringOriginal";
 import ScoringTranslated from "./ScoringTranslated";
+import BASE_URL from "../baseUrl";
 
 function EditTranslations() {
   const videoRef = useRef<any>();
@@ -51,7 +52,7 @@ function EditTranslations() {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:3001/getTranslationsDetailsCount",
+          `${BASE_URL}/getTranslationsDetailsCount`,
           {
             params: {
               fileGUID,
@@ -75,15 +76,12 @@ function EditTranslations() {
     let newData: any[] = [];
     // get translations from server with filename
     try {
-      const response = await axios.get(
-        "http://localhost:3001/getTranslationsDetails",
-        {
-          params: {
-            fileGUID,
-            offset,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/getTranslationsDetails`, {
+        params: {
+          fileGUID,
+          offset,
+        },
+      });
       if (response?.data) {
         newData = response?.data;
       }
@@ -98,12 +96,9 @@ function EditTranslations() {
   const onFinalTranslation = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/translationReprocessing",
-        {
-          fileGUID,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/translationReprocessing`, {
+        fileGUID,
+      });
       console.log("Final translation updated successfully", response);
     } catch (error) {
       console.error("Failed to update final translation", error);
